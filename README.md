@@ -1,2 +1,2 @@
 # Solano
-Soloano BlockChain Project
+Solano BlockChain Project
