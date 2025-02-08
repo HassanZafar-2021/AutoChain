@@ -1,3 +1,4 @@
 fastapi
+uvicorn
 
 #run w uvicorn main:app --reload
