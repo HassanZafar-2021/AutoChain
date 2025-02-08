@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import PropTypes from "prop-types";
-import { PhantomProvider } from "../util/phantomProvider";
+import { PhantomProvider } from "../utils/phantomProvider";
 
 const WalletConnect = ({ setWalletConnected }) => {
   const [walletAddress, setWalletAddress] = useState(null);
