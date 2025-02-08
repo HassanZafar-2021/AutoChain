@@ -6,7 +6,7 @@ export const verifyNFTOwnership = async (walletAddress) => {
   const publicKey = new PublicKey(walletAddress);
   const nftAccounts = await connection.getParsedTokenAccountsByOwner(
     publicKey,
-    { programId: new PublicKey("NFT_PROGRAM_ID") }
+    { programId: new PublicKey("Your_NFT_Program_ID_Here") } // Replace with actual NFT program ID
   );
   return nftAccounts.value;
 };
