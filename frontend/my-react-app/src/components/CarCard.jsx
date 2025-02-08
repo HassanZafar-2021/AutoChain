@@ -1,14 +1,11 @@
-import Image from "next/image";
-import PropTypes from 'prop-types';
+import PropTypes from "prop-types";
 
 const CarCard = ({ car }) => (
   <div className="border p-4 rounded-lg shadow-md bg-white">
-    <Image
+    <img
       src={car.image}
       alt={car.model}
-      width={300}
-      height={200}
-      className="rounded-md"
+      className="w-full h-48 object-cover rounded-md"
     />
     <h3 className="text-lg font-bold">
       {car.make} {car.model}
@@ -24,6 +21,7 @@ const CarCard = ({ car }) => (
     )}
   </div>
 );
+
 CarCard.propTypes = {
   car: PropTypes.shape({
     image: PropTypes.string.isRequired,

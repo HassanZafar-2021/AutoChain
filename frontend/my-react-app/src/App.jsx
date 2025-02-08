@@ -6,7 +6,7 @@ import Listings from "./pages/Listings";
 import Profile from "./pages/Profile";
 import CarDetails from "./pages/CarDetails";
 import NotFound from "./pages/NotFound";
-import Sell from "./pages/Sell"; // Ensure you have this component
+import Sell from "./pages/Sell"; // Ensure this component exists
 import "./index.css"; // Ensure Tailwind is applied
 
 const App = () => {
@@ -41,10 +41,10 @@ const App = () => {
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/listings" element={<Listings />} />
-              <Route path="/sell" element={<Sell />} /> {/* Added Sell Route */}
+              <Route path="/sell" element={<Sell />} /> {/* Sell Route */}
               <Route path="/profile" element={<Profile />} />
               <Route path="/car/:id" element={<CarDetails />} />
-              <Route path="*" element={<NotFound />} />
+              <Route path="*" element={<NotFound />} /> {/* 404 Page */}
             </Routes>
           </main>
 

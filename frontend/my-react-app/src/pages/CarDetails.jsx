@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import { useParams } from "react-router-dom";
-import Button from "./Button";
-import Loader from "./Loader";
+import Button from "../components/Button";
+import Loader from "../components/Loader";
 
 const CarDetails = ({ cars }) => {
   const { id } = useParams();
