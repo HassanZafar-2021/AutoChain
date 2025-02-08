@@ -1,0 +1,3 @@
+fastapi
+
+#run w uvicorn main:app --reload
