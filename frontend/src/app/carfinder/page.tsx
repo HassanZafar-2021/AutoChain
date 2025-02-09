@@ -1,5 +1,7 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import 'regenerator-runtime/runtime';
+
 import SpeechRecognition, { useSpeechRecognition } from "react-speech-recognition";
 
 interface Message {
@@ -11,9 +13,24 @@ const CarFinderPage: React.FC = () => {
   const { transcript, listening, resetTranscript, browserSupportsSpeechRecognition } = useSpeechRecognition();
   const [conversation, setConversation] = useState<Message[]>([]);
   const [isSending, setIsSending] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  // Set the mounted flag to true on the client after mounting.
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Until the component is mounted, don't render anything.
+  if (!mounted) {
+    return null;
+  }
 
   if (!browserSupportsSpeechRecognition) {
-    return <span className="text-red-500 font-semibold text-lg">Your browser doesn&apos;t support speech recognition.</span>;
+    return (
+      <span className="text-red-500 font-semibold text-lg">
+        Your browser doesn&apos;t support speech recognition.
+      </span>
+    );
   }
 
   const startListening = () => {
@@ -43,7 +60,10 @@ const CarFinderPage: React.FC = () => {
       setConversation((prev) => [...prev, { sender: "agent", text: data.reply }]);
     } catch (error) {
       console.error("Error sending message:", error);
-      setConversation((prev) => [...prev, { sender: "agent", text: "There was an error processing your request." }]);
+      setConversation((prev) => [
+        ...prev,
+        { sender: "agent", text: "There was an error processing your request." },
+      ]);
     } finally {
       setIsSending(false);
     }
@@ -56,7 +76,9 @@ const CarFinderPage: React.FC = () => {
         <h1 className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">
           Find Your Dream Car with AI
         </h1>
-        <p className="text-lg text-gray-300 mt-2">Speak to our assistant and get recommendations instantly</p>
+        <p className="text-lg text-gray-300 mt-2">
+          Speak to our assistant and get recommendations instantly
+        </p>
       </header>
 
       {/* Chat Box */}
@@ -66,16 +88,20 @@ const CarFinderPage: React.FC = () => {
             <p className="text-center text-gray-400 text-lg">Start a conversation...</p>
           ) : (
             conversation.map((msg, index) => (
-              <div key={index} className={`flex ${msg.sender === "user" ? "justify-end" : "justify-start"}`}>
+              <div
+                key={index}
+                className={`flex ${msg.sender === "user" ? "justify-end" : "justify-start"}`}
+              >
                 <div
                   className={`max-w-[75%] px-4 py-3 rounded-lg shadow-md text-lg ${
-                    msg.sender === "user"
-                      ? "bg-blue-600 text-white"
-                      : "bg-gray-700 text-gray-200"
+                    msg.sender === "user" ? "bg-blue-600 text-white" : "bg-gray-700 text-gray-200"
                   }`}
                 >
                   <p>
-                    <span className="font-semibold">{msg.sender === "user" ? "You:" : "AI:"}</span> {msg.text}
+                    <span className="font-semibold">
+                      {msg.sender === "user" ? "You:" : "AI:"}
+                    </span>{" "}
+                    {msg.text}
                   </p>
                 </div>
               </div>
@@ -87,7 +113,11 @@ const CarFinderPage: React.FC = () => {
       {/* Voice Control Panel */}
       <div className="mt-6 flex flex-col items-center space-y-4">
         {/* Transcript */}
-        <div className={`text-lg text-gray-300 bg-gray-800 px-6 py-3 rounded-lg border border-gray-700 w-full max-w-2xl text-center ${listening ? "ring-2 ring-blue-500" : ""}`}>
+        <div
+          className={`text-lg text-gray-300 bg-gray-800 px-6 py-3 rounded-lg border border-gray-700 w-full max-w-2xl text-center ${
+            listening ? "ring-2 ring-blue-500" : ""
+          }`}
+        >
           {listening ? transcript || "Listening..." : "Your transcript will appear here..."}
         </div>
 
