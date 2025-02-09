@@ -1,3 +1,9 @@
 fastapi
+uvicorn
+pydantic
+dotenv
+openai
+requests
+langchain
 
-#run w uvicorn main:app --reload
+#run: uvicorn main:app --reload
