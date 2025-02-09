@@ -47,6 +47,15 @@ const ListingPage = () => {
     });
 
     const data = await response.json();
+
+    await new Promise((resolve) => setTimeout(resolve, 3000));
+
+    await fetch("http://localhost:8000/add_rec", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(formData),
+    });
+
     setNftImageUrl(data.hostedImageUrl);
     setShowPopup(true);
   };
@@ -56,7 +65,7 @@ const ListingPage = () => {
       {/* Wider Layout Wrapper */}
       <div className="w-full max-w-5xl bg-gray-900 border border-gray-700 rounded-3xl shadow-xl p-10">
         <h2 className="text-3xl font-bold text-center text-gray-200 mb-6">
-          List Your Car on Solana 🚗
+          Sell Your Car on The Blockchain 🚗
         </h2>
 
         <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-6">
@@ -67,7 +76,7 @@ const ListingPage = () => {
               { label: "Make", name: "make", type: "text" },
               { label: "Year", name: "year", type: "number" },
               { label: "Miles", name: "miles", type: "number" },
-              { label: "Price", name: "price", type: "number" },
+              { label: "Price (in Sol)", name: "price", type: "number" },
             ].map(({ label, name, type }) => (
               <div key={name}>
                 <label className="block text-gray-400 font-medium">{label}</label>

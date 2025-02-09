@@ -1,26 +1,22 @@
 "use client";
 
+import { WalletButton } from "../solana/solana-provider";  
+
+
 import React, { useState, useEffect } from "react";
 import { X } from "lucide-react";
 
 interface Listing {
   id: string;
   name: string;
-  image: string;
-  type: string;
-  // price: string;
-  verified: boolean;
-  condition: string;
+  image_url: string;
+  price: string;
+  status: boolean;
+  brand: string;
   make: string;
-  model: string;
-  // zipCode: string;
   year: number;
-  mileage: string;
-  transmission: string;
-  fuelType: string;
-  exteriorColor: string;
-  interiorColor: string;
-  // vin: string;
+  miles: string;
+
 }
 
 interface BlockchainData {
@@ -129,14 +125,14 @@ const CarDetailsModal = ({
   <Modal isOpen={isOpen} onClose={onClose}>
     <div className="space-y-4">
       <img
-        src={car.image}
+        src={car.image_url}
         alt={car.name}
         className="w-full h-64 object-cover rounded-xl"
       />
 
       <div className="space-y-4">
         <div className="flex justify-between items-center">
-          <h2 className="text-2xl font-bold text-purple-400">{car.name}</h2>
+          <h2 className="text-2xl font-bold text-purple-400">{car.brand} {car.make}</h2>
           <span className="text-xl font-bold text-purple-300">{car.price}</span>
         </div>
 
@@ -147,51 +143,22 @@ const CarDetailsModal = ({
             </h3>
             <ul className="space-y-2 text-gray-300">
               <li>
-                <span className="text-gray-400">Make:</span> {car.make}
+                <span className="text-gray-400">Make:</span> {car.brand}
               </li>
               <li>
-                <span className="text-gray-400">Model:</span> {car.model}
+                <span className="text-gray-400">Model:</span> {car.make}
               </li>
               <li>
                 <span className="text-gray-400">Year:</span> {car.year}
-              </li>
-              <li>
-                <span className="text-gray-400">Condition:</span>{" "}
-                {car.condition}
-              </li>
-              <li>
-                <span className="text-gray-400">Mileage:</span> {car.mileage}
               </li>
               {/* <li>
                 <span className="text-gray-400">VIN:</span> {car.vin}
               </li> */}
             </ul>
+            <WalletButton></WalletButton>
           </div>
 
           <div>
-            <h3 className="text-lg font-semibold text-purple-400 mb-2">
-              Specifications
-            </h3>
-            <ul className="space-y-2 text-gray-300">
-              <li>
-                <span className="text-gray-400">Type:</span> {car.type}
-              </li>
-              <li>
-                <span className="text-gray-400">Transmission:</span>{" "}
-                {car.transmission}
-              </li>
-              <li>
-                <span className="text-gray-400">Fuel Type:</span> {car.fuelType}
-              </li>
-              <li>
-                <span className="text-gray-400">Exterior:</span>{" "}
-                {car.exteriorColor}
-              </li>
-              <li>
-                <span className="text-gray-400">Interior:</span>{" "}
-                {car.interiorColor}
-              </li>
-            </ul>
           </div>
         </div>
       </div>
@@ -199,10 +166,10 @@ const CarDetailsModal = ({
   </Modal>
 );
 
-const useMockBlockchainData = (): BlockchainData => {
-  const [loading, setLoading] = useState(true);
-  const [listings, setListings] = useState<Listing[]>([]);
-  const [totalListings, setTotalListings] = useState(0);
+// const useMockBlockchainData = (): BlockchainData => {
+//   const [loading, setLoading] = useState(true);
+//   const [listings, setListings] = useState<Listing[]>([]);
+//   const [totalListings, setTotalListings] = useState(0);
 
 //   useEffect(() => {
 //     const fetchData = async () => {
@@ -303,29 +270,38 @@ const useMockBlockchainData = (): BlockchainData => {
   const [listings, setListings] = useState<Listing[]>([]);
   const [totalListings, setTotalListings] = useState(0);
 
+  
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
-
+        const apiKey = "sk_staging_673ogr4r8iSEr5cwnpDcYgD1MeKeyz2MSrNYA6fvnxw4VTTRuCBxbNVh1TAebdVKWw6ZVT4DZSKmvioTHgGRWn4gUV2Nqcp242SgwkDPbgGLzqDxYFFadfjr7nhKH1gmFaFPfQBEBnRyKuP4WZMcMaCA85jLF1nJnHXQwvRm8getAB67oDZApjDvdwV2ZE2w2dxR71BJDmjdDz6YcoxMGcRSprocess.env.X_API_KEY";
+        if (!apiKey) {
+          throw new Error("X-API-KEY is not defined in the environment variables");
+        }
         // Fetch all tokens from CrossMint
-        const tokens = 
-
-        // Extract mongoURIs
-        const mongoURIs = 
-
-        // Fetch car documents from MongoDB using FastAPI
-        const carDocs = await Promise.all(
-          mongoURIs.map(async (uri) => {
-            const response = await fetch(
-              `http://localhost:8000/getDocument/${uri}`
-            );
-            return response.ok ? await response.json() : null;
-          })
-        );
+        // const response = await fetch("https://staging.crossmint.com/api/2022-06-09/collections/default-solana/nfts", {
+        //   headers: {
+        //     "Authorization": `Bearer ${apiKey}`,
+        //     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3"
+        //   }
+        // });
+        // const tokens = await response.json();
+        // console.log(tokens);
+        const response = await fetch("http://localhost:8000/cars", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+        const data = await response.json(); // Parse the JSON response
+        const carDocuments = data.cars; // Extract the 'cars' array
+        
+        console.log(carDocuments); // Logs the 'cars' array
+        
 
         // Filter out failed fetches and update state
-        const validListings = carDocs.filter((car) => car !== null);
+        const validListings = carDocuments.filter((car: Listing | null) => car !== null);
         setListings(validListings);
         setTotalListings(validListings.length);
       } catch (error) {
@@ -407,32 +383,17 @@ export default function DashboardFeature() {
 
     let filtered = [...allListings];
 
-    // Apply category filter
-    if (selectedCategory !== "All") {
-      filtered = filtered.filter((car) => car.type === selectedCategory);
-    }
-
-    // Apply condition filter
-    if (condition !== "Any") {
-      filtered = filtered.filter((car) => car.condition === condition);
-    }
-
     // Apply make filter
     if (make !== "Any Make") {
-      filtered = filtered.filter((car) => car.make === make);
+      filtered = filtered.filter((car) => car.brand === make);
     }
 
     // Apply model filter
     if (model !== "Any Model") {
-      filtered = filtered.filter((car) => car.model === model);
+      filtered = filtered.filter((car) => car.make === model);
     }
 
-    // Apply ZIP code filter if provided
-    if (zipCode.trim()) {
-      filtered = filtered.filter((car) =>
-        car.zipCode.startsWith(zipCode.substring(0, 3))
-      );
-    }
+
 
     // Apply sorting
     switch (sortOrder) {
@@ -442,11 +403,6 @@ export default function DashboardFeature() {
       case "price-high":
         filtered.sort((a, b) => parseFloat(b.price) - parseFloat(a.price));
         break;
-      case "newest":
-      default:
-        filtered.sort(
-          (a, b) => parseInt(b.id.slice(2)) - parseInt(a.id.slice(2))
-        );
     }
 
     setFilteredListings(filtered);
@@ -602,21 +558,23 @@ export default function DashboardFeature() {
               >
                 <div className="relative">
                   <img
-                    src={car.image}
+                    src={car.image_url}
                     alt={car.name}
                     className="w-full h-48 object-cover rounded-xl mb-4"
                   />
-                  {car.verified && (
+                  {car.status && (
                     <div className="absolute top-2 right-2 bg-green-500 text-white px-2 py-1 rounded-lg text-sm">
                       Verified ✓
                     </div>
                   )}
                 </div>
-                <h3 className="text-lg font-semibold text-white">{car.name}</h3>
+                <h3 className="text-lg font-semibold text-white">{car.brand} {car.make}</h3>
                 <div className="flex justify-between items-center mt-2">
-                  <span className="text-sm text-purple-400">{car.type}</span>
                   <span className="text-lg font-bold text-purple-300">
-                    {car.price}
+                    <span className="flex items-center">
+                      <img src="https://pouch.jumpshare.com/preview/2pTJfN5_A5U3Xhkcm54L8EZaJU9vZBX5t2KmZckKLQQPb3MFdHh9fU4NzPBTEpUqOBZUTui2yHe3_Sn1-HC9faia9yT-aHeX_iAaPLV1qkE" alt="Solana" className="w-9 h-9 mr-1" />
+                      {car.price}
+                    </span>
                   </span>
                 </div>
                 <button

@@ -20,7 +20,7 @@ os.environ["OPENAI_API_KEY"] = os.getenv("OPENAI_API_KEY")  # Replace with your 
 llm = ChatOpenAI(model="gpt-4o-mini", temperature=0.7)
 
 # MongoDB Connection
-MONGO_URI = os.getenv("MONGO_URI")
+MONGO_URI = "mongodb+srv://aaf9407:r3BhQVoLzKmtQvC8@cluster0.pmxxs.mongodb.net/"
 client = MongoClient(MONGO_URI)
 db = client["car_nft_marketplace"]
 cars_collection = db["cars"]
@@ -77,7 +77,7 @@ async def insert_car_record(user_data: CarData):
            "txId": user_data.txId,
            "creator": user_data.creator,
            "owner": user_data.owner,
-           "status": "active"  # Add status field
+           "status": True  # Add status field
        }
        
        # Insert into MongoDB
@@ -108,11 +108,11 @@ def get_car_by_tokenid(tokenid: str):
     return car
 
 @app.get("/cars")
-async def get_all_cars(limit: int = 10, skip: int = 0):
+async def get_all_cars(skip: int = 0):
     """
     Retrieves all car records from MongoDB with pagination.
     """
-    cursor = cars_collection.find().skip(skip).limit(limit)
+    cursor = cars_collection.find().skip(skip)
     cars = []
     
     # Convert cursor to list and handle ObjectId conversion
@@ -123,8 +123,7 @@ async def get_all_cars(limit: int = 10, skip: int = 0):
     return {
         "cars": cars,
         "count": len(cars),
-        "skip": skip,
-        "limit": limit
+        "skip": skip
     }
 
 # 🔹 GET Endpoint: Car Value Estimation with Full Data Sent to LLM
@@ -356,7 +355,8 @@ async def process_image(image: ImageUrl):
             size="256x256"
         )
 
-        pixel_art_url = pixel_art_response.data[0].url
+        # pixel_art_url = pixel_art_response.data[0].url
+        pixel_art_url = "https://i.ibb.co/G4cfPdFh/hellcat-png.png"
         # Upload the pixel art image to imgbb
         imgbb_api_key = os.getenv("IMGBB_API_KEY")
         if not imgbb_api_key:
@@ -371,7 +371,7 @@ async def process_image(image: ImageUrl):
         )
 
         if imgbb_response.status_code != 200:
-            pixel_art_url = "https://i.ibb.co/rGTSGPMV/png-skoid-d505667d-d6c1-4a0a-bac7-5c84a87759f8-sktid-a48cca56-e6da-484e-a814-9c849652bcb3-skt-2025-0.png"
+            pixel_art_url = "https://i.ibb.co/G4cfPdFh/hellcat-png.png"
             print("failed sad")
 
         imgbb_data = imgbb_response.json()
@@ -379,8 +379,8 @@ async def process_image(image: ImageUrl):
 
     except Exception as e:
         # Return a default URL in case of any error
-        pixel_art_url = "https://i.ibb.co/rGTSGPMV/png-skoid-d505667d-d6c1-4a0a-bac7-5c84a87759f8-sktid-a48cca56-e6da-484e-a814-9c849652bcb3-skt-2025-0.png"
-        hosted_image_url = "https://i.ibb.co/rGTSGPMV/png-skoid-d505667d-d6c1-4a0a-bac7-5c84a87759f8-sktid-a48cca56-e6da-484e-a814-9c849652bcb3-skt-2025-0.png"
+        pixel_art_url = "https://i.ibb.co/G4cfPdFh/hellcat-png.png"
+        hosted_image_url = "https://i.ibb.co/G4cfPdFh/hellcat-png.png"
 
     return {
         "description": description,
@@ -409,3 +409,38 @@ def agent_chat(chat: ChatRequest):
     agent_reply = response.content
 
     return {"reply": agent_reply}
+
+from datetime import datetime
+from fastapi import HTTPException
+
+@app.post("/add_rec")
+async def addon_image():
+    """
+    Adds a predefined car record to MongoDB.
+    """
+    car_record = {
+        "tokenid": "c183423b-5f9e-4c3b-b21a-7d62c4983f5a",
+        "brand": "NYU",
+        "make": "Campus Safety Car",
+        "year": 2022,
+        "miles": 15000,
+        "price": 75,
+        "description": "Tired of keeping the school safe..",
+        "image_url": "https://i.ibb.co/G4cfPdFh/hellcat-png.png",
+        "mintHash": "XG7MP9LJ5Q2T8B6DNCY1V43KWA",
+        "txId": "D9LJ5QXG7MP2T8B6N4Y1V3CWAK",
+        "owner": "B8T6D9LJ5QXG7MP2N4Y1V3CWAK",
+        "creator": "T9LJ5QXG7MP2B8D6NWVY1A34KC",
+        "status": False
+    }
+
+    try:
+        # Insert into MongoDB
+        result = cars_collection.insert_one(car_record)
+        return {
+            "message": "Car record inserted successfully!",
+            "car_id": str(result.inserted_id),
+            "tokenid": car_record["tokenid"]
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Database insertion failed: {str(e)}")
