@@ -1,7 +1,8 @@
 'use client'
 
 import { Keypair, PublicKey } from '@solana/web3.js'
-import { useMemo } from 'react'
+import React, { useMemo } from 'react'
+import { useQuery, useMutation } from 'react-query'
 import { ellipsify } from '../ui/ui-layout'
 import { ExplorerLink } from '../cluster/cluster-ui'
 import { useFrontendProgram, useFrontendProgramAccount } from './frontend-data-access'
@@ -39,7 +40,7 @@ export function FrontendList() {
         <span className="loading loading-spinner loading-lg"></span>
       ) : accounts.data?.length ? (
         <div className="grid md:grid-cols-2 gap-4">
-          {accounts.data?.map((account) => (
+          {accounts.data?.map((account: { publicKey: PublicKey }) => (
             <FrontendCard key={account.publicKey.toString()} account={account.publicKey} />
           ))}
         </div>
