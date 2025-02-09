@@ -5,7 +5,6 @@ from typing import Optional
 from typing import Optional
 import math
 import os
-import os
 from openai import OpenAI
 import requests
 from dotenv import load_dotenv
@@ -237,7 +236,7 @@ async def process_image(image: ImageUrl):
     """
     # Step 1: Analyze the image
     analysis_response = client.chat.completions.create(
-        model="gpt-4o",
+        model="gpt-4o-mini",
         messages=[
             {
                 "role": "user",
@@ -247,7 +246,7 @@ async def process_image(image: ImageUrl):
                 ],
             }
         ],
-        max_tokens=100
+        max_tokens=101
     )
     
     # Extract the description text
@@ -256,9 +255,9 @@ async def process_image(image: ImageUrl):
     # Step 2: Generate pixelated image based on description
     pixel_art_response = client.images.generate(
         model="dall-e-2",
-        prompt=f"cartoony pixel art of {description}",
+        prompt=f"2d detailed pixel art of {description} , plain white background",
         n=1,
-        size="512x512"
+        size="256x256"
     )
 
     pixel_art_url = pixel_art_response.data[0].url
@@ -286,3 +285,25 @@ async def process_image(image: ImageUrl):
         "hostedImageUrl": hosted_image_url,
         "pixelArtUrl": pixel_art_url
     }
+
+class ChatRequest(BaseModel):
+    message: str
+
+@app.post("/agent_chat/")
+def agent_chat(chat: ChatRequest):
+    """
+    Receives a user's message and returns a persuasive and engaging response
+    from the AI-powered car salesman agent.
+    """
+    # Generate the agent's reply using LangChain
+    system_prompt = (
+        "You are an assistant helping the user find their dream car. be very kind and helpful, and explain your reasoning for all your decisions. Do NOT use any markdown such as asteriks, new lines, bolding, etc. "
+    )
+
+    response = llm([
+        SystemMessage(content=system_prompt),
+        HumanMessage(content=chat.message)
+    ])
+    agent_reply = response.content
+
+    return {"reply": agent_reply}

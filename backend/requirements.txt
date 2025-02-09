@@ -5,6 +5,8 @@ python-dotenv
 openai
 requests
 langchain
+base64
+elevenlabs
 langchain-community
 
 #run: uvicorn main:app --reload
