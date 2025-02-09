@@ -1,3 +1,12 @@
 fastapi
+uvicorn
+pydantic
+python-dotenv
+openai
+requests
+langchain
+base64
+elevenlabs
+langchain-community
 
-#run w uvicorn main:app --reload
+#run: uvicorn main:app --reload
