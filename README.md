@@ -22,7 +22,11 @@ On-chain sales history: Public and tamper-proof transaction records enhance tran
 
 ## Installation
 
-npm init - y and run npm i for node modules and dependencies installed. Solona user targeted audience.
+(npm init - y) 
+and 
+(run npm I)
+for node modules and dependencies installed. 
+Solana user targeted audience.
 
 ## Usage
 run npm run dev to start the program for both frontend and backend.
