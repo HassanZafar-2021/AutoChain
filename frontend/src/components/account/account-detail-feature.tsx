@@ -2,7 +2,6 @@
 
 import { PublicKey } from '@solana/web3.js'
 import { useMemo } from 'react'
-
 import { useParams } from 'next/navigation'
 
 import { ExplorerLink } from '../cluster/cluster-ui'
@@ -11,18 +10,19 @@ import { AccountBalance, AccountButtons, AccountTokens, AccountTransactions } fr
 
 export default function AccountDetailFeature() {
   const params = useParams()
+
   const address = useMemo(() => {
-    if (!params.address) {
-      return
-    }
+    if (!params?.address) return null
     try {
       return new PublicKey(params.address)
-    } catch (e) {
-      console.log(`Invalid public key`, e)
+    } catch (error) {
+      console.error('Invalid public key:', error)
+      return null
     }
   }, [params])
+
   if (!address) {
-    return <div>Error loading account</div>
+    return <div className="text-red-500">🚨 Error: Invalid account address</div>
   }
 
   return (
@@ -31,7 +31,7 @@ export default function AccountDetailFeature() {
         title={<AccountBalance address={address} />}
         subtitle={
           <div className="my-4">
-            <ExplorerLink path={`account/${address}`} label={ellipsify(address.toString())} />
+            <ExplorerLink path={`account/${address.toBase58()}`} label={ellipsify(address.toBase58())} />
           </div>
         }
       >
@@ -39,6 +39,7 @@ export default function AccountDetailFeature() {
           <AccountButtons address={address} />
         </div>
       </AppHero>
+
       <div className="space-y-8">
         <AccountTokens address={address} />
         <AccountTransactions address={address} />
