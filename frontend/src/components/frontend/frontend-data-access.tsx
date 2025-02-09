@@ -1,6 +1,7 @@
 'use client'
 
-import { getFrontendProgram, getFrontendProgramId } from '@project/anchor'
+import { Program } from '@coral-xyz/anchor'
+
 import { useConnection } from '@solana/wallet-adapter-react'
 import { Cluster, Keypair, PublicKey } from '@solana/web3.js'
 import { useMutation, useQuery } from '@tanstack/react-query'
@@ -15,8 +16,20 @@ export function useFrontendProgram() {
   const { cluster } = useCluster()
   const transactionToast = useTransactionToast()
   const provider = useAnchorProvider()
-  const programId = useMemo(() => getFrontendProgramId(cluster.network as Cluster), [cluster])
-  const program = useMemo(() => getFrontendProgram(provider, programId), [provider, programId])
+  const programId = useMemo(() => new PublicKey('coUnmi3oBUtwtd9fjeAvSsJssXh5A5xyPbhpewyzRVF'), [cluster])
+  const idl = useMemo(() => {
+    return {
+      address: 'YourAddressHere',
+      metadata: {
+        name: 'YourProgramName',
+        version: '1.0.0',
+        spec: [],
+      },
+      instructions: [],
+    }
+  }, [cluster])
+  const program = useMemo(() => idl && provider ? new Program(idl as Idl, programId, provider) : null, [idl, programId, provider])
+
 
   const accounts = useQuery({
     queryKey: ['frontend', 'all', { cluster }],

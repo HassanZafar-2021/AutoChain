@@ -1,7 +1,7 @@
 'use client'
 
-import {TOKEN_2022_PROGRAM_ID, TOKEN_PROGRAM_ID} from '@solana/spl-token'
-import {useConnection, useWallet} from '@solana/wallet-adapter-react'
+import { TOKEN_2022_PROGRAM_ID, TOKEN_PROGRAM_ID } from '@solana/spl-token'
+import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import {
   Connection,
   LAMPORTS_PER_SOL,
@@ -11,9 +11,21 @@ import {
   TransactionSignature,
   VersionedTransaction,
 } from '@solana/web3.js'
-import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import toast from 'react-hot-toast'
-import {useTransactionToast} from '../ui/ui-layout'
+import { useTransactionToast } from '../ui/ui-layout'
+
+// Fetch latest dynamic price from oracle
+async function fetchDynamicPrice(): Promise<number> {
+  try {
+    const response = await fetch('https://api.youroracle.com/prices/latest')
+    const data = await response.json()
+    return data.price // Assuming response has { price: number }
+  } catch (error) {
+    console.error('Oracle fetch error:', error)
+    throw new Error('Failed to fetch price data')
+  }
+}
 
 export function useGetBalance({ address }: { address: PublicKey }) {
   const { connection } = useConnection()
@@ -40,12 +52,8 @@ export function useGetTokenAccounts({ address }: { address: PublicKey }) {
     queryKey: ['get-token-accounts', { endpoint: connection.rpcEndpoint, address }],
     queryFn: async () => {
       const [tokenAccounts, token2022Accounts] = await Promise.all([
-        connection.getParsedTokenAccountsByOwner(address, {
-          programId: TOKEN_PROGRAM_ID,
-        }),
-        connection.getParsedTokenAccountsByOwner(address, {
-          programId: TOKEN_2022_PROGRAM_ID,
-        }),
+        connection.getParsedTokenAccountsByOwner(address, { programId: TOKEN_PROGRAM_ID }),
+        connection.getParsedTokenAccountsByOwner(address, { programId: TOKEN_2022_PROGRAM_ID }),
       ])
       return [...tokenAccounts.value, ...token2022Accounts.value]
     },
@@ -63,24 +71,25 @@ export function useTransferSol({ address }: { address: PublicKey }) {
     mutationFn: async (input: { destination: PublicKey; amount: number }) => {
       let signature: TransactionSignature = ''
       try {
+        const dynamicPrice = await fetchDynamicPrice()
+        const adjustedAmount = input.amount * dynamicPrice
+
         const { transaction, latestBlockhash } = await createTransaction({
           publicKey: address,
           destination: input.destination,
-          amount: input.amount,
+          amount: adjustedAmount,
           connection,
         })
 
-        // Send transaction and await for signature
         signature = await wallet.sendTransaction(transaction, connection)
 
-        // Send transaction and await for signature
         await connection.confirmTransaction({ signature, ...latestBlockhash }, 'confirmed')
 
-        console.log(signature)
+        console.log('Transaction successful:', signature)
         return signature
       } catch (error: unknown) {
-        console.log('error', `Transaction failed! ${error}`, signature)
-
+        console.error('Transaction failed:', error)
+        toast.error(`Transaction failed! ${error}`)
         return
       }
     },
@@ -89,16 +98,34 @@ export function useTransferSol({ address }: { address: PublicKey }) {
         transactionToast(signature)
       }
       return Promise.all([
-        client.invalidateQueries({
-          queryKey: ['get-balance', { endpoint: connection.rpcEndpoint, address }],
-        }),
-        client.invalidateQueries({
-          queryKey: ['get-signatures', { endpoint: connection.rpcEndpoint, address }],
-        }),
+        client.invalidateQueries({ queryKey: ['get-balance', { endpoint: connection.rpcEndpoint, address }] }),
+        client.invalidateQueries({ queryKey: ['get-signatures', { endpoint: connection.rpcEndpoint, address }] }),
       ])
     },
-    onError: (error: unknown) => {
-      toast.error(`Transaction failed! ${error}`)
+  })
+}
+
+// New: Fetch NFT transaction history
+export function useGetNFTTransactions({ address }: { address: PublicKey }) {
+  const { connection } = useConnection()
+
+  return useQuery({
+    queryKey: ['get-nft-transactions', { endpoint: connection.rpcEndpoint, address }],
+    queryFn: async () => {
+      const signatures = await connection.getSignaturesForAddress(address)
+      return signatures
+    },
+  })
+}
+
+// Placeholder for NFT minting
+export function useMintNFT({ address }: { address: PublicKey }) {
+  return useMutation({
+    mutationKey: ['mint-nft', { address }],
+    mutationFn: async (metadataUri: string) => {
+      console.log(`Minting NFT for ${address.toBase58()} with metadata: ${metadataUri}`)
+      // Future: Call NFT minting smart contract
+      return 'NFT Minted'
     },
   })
 }
@@ -122,12 +149,8 @@ export function useRequestAirdrop({ address }: { address: PublicKey }) {
     onSuccess: (signature) => {
       transactionToast(signature)
       return Promise.all([
-        client.invalidateQueries({
-          queryKey: ['get-balance', { endpoint: connection.rpcEndpoint, address }],
-        }),
-        client.invalidateQueries({
-          queryKey: ['get-signatures', { endpoint: connection.rpcEndpoint, address }],
-        }),
+        client.invalidateQueries({ queryKey: ['get-balance', { endpoint: connection.rpcEndpoint, address }] }),
+        client.invalidateQueries({ queryKey: ['get-signatures', { endpoint: connection.rpcEndpoint, address }] }),
       ])
     },
   })
@@ -147,10 +170,8 @@ async function createTransaction({
   transaction: VersionedTransaction
   latestBlockhash: { blockhash: string; lastValidBlockHeight: number }
 }> {
-  // Get the latest blockhash to use in our transaction
   const latestBlockhash = await connection.getLatestBlockhash()
 
-  // Create instructions to send, in this case a simple transfer
   const instructions = [
     SystemProgram.transfer({
       fromPubkey: publicKey,
@@ -159,14 +180,12 @@ async function createTransaction({
     }),
   ]
 
-  // Create a new TransactionMessage with version and compile it to legacy
   const messageLegacy = new TransactionMessage({
     payerKey: publicKey,
     recentBlockhash: latestBlockhash.blockhash,
     instructions,
   }).compileToLegacyMessage()
 
-  // Create a new VersionedTransaction which supports legacy and v0
   const transaction = new VersionedTransaction(messageLegacy)
 
   return {

@@ -21,12 +21,17 @@ export function AccountBalance({ address }: { address: PublicKey }) {
 
   return (
     <div>
-      <h1 className="text-5xl font-bold cursor-pointer" onClick={() => query.refetch()}>
+      <h1
+        className="text-5xl font-bold cursor-pointer"
+        onClick={() => query.refetch()}
+        style={{ color: 'blue', margin: '10px 0' }}
+      >
         {query.data ? <BalanceSol balance={query.data} /> : '...'} SOL
       </h1>
     </div>
   )
 }
+
 export function AccountChecker() {
   const { publicKey } = useWallet()
   if (!publicKey) {
@@ -34,6 +39,7 @@ export function AccountChecker() {
   }
   return <AccountBalanceCheck address={publicKey} />
 }
+
 export function AccountBalanceCheck({ address }: { address: PublicKey }) {
   const { cluster } = useCluster()
   const mutation = useRequestAirdrop({ address })
@@ -44,13 +50,17 @@ export function AccountBalanceCheck({ address }: { address: PublicKey }) {
   }
   if (query.isError || !query.data) {
     return (
-      <div className="alert alert-warning text-warning-content/80 rounded-none flex justify-center">
+      <div
+        className="alert alert-warning text-warning-content/80 rounded-none flex justify-center"
+        style={{ backgroundColor: 'yellow', padding: '10px' }}
+      >
         <span>
           You are connected to <strong>{cluster.name}</strong> but your account is not found on this cluster.
         </span>
         <button
           className="btn btn-xs btn-neutral"
           onClick={() => mutation.mutateAsync(1).catch((err) => console.log(err))}
+          style={{ marginLeft: '10px' }}
         >
           Request Airdrop
         </button>
@@ -77,6 +87,7 @@ export function AccountButtons({ address }: { address: PublicKey }) {
           disabled={cluster.network?.includes('mainnet')}
           className="btn btn-xs lg:btn-md btn-outline"
           onClick={() => setShowAirdropModal(true)}
+          style={{ margin: '5px' }}
         >
           Airdrop
         </button>
@@ -84,10 +95,15 @@ export function AccountButtons({ address }: { address: PublicKey }) {
           disabled={wallet.publicKey?.toString() !== address.toString()}
           className="btn btn-xs lg:btn-md btn-outline"
           onClick={() => setShowSendModal(true)}
+          style={{ margin: '5px' }}
         >
           Send
         </button>
-        <button className="btn btn-xs lg:btn-md btn-outline" onClick={() => setShowReceiveModal(true)}>
+        <button
+          className="btn btn-xs lg:btn-md btn-outline"
+          onClick={() => setShowReceiveModal(true)}
+          style={{ margin: '5px' }}
+        >
           Receive
         </button>
       </div>
@@ -121,6 +137,7 @@ export function AccountTokens({ address }: { address: PublicKey }) {
                     queryKey: ['getTokenAccountBalance'],
                   })
                 }}
+                style={{ margin: '5px' }}
               >
                 <IconRefresh size={16} />
               </button>
@@ -203,7 +220,7 @@ export function AccountTransactions({ address }: { address: PublicKey }) {
           {query.isLoading ? (
             <span className="loading loading-spinner"></span>
           ) : (
-            <button className="btn btn-sm btn-outline" onClick={() => query.refetch()}>
+            <button className="btn btn-sm btn-outline" onClick={() => query.refetch()} style={{ margin: '5px' }}>
               <IconRefresh size={16} />
             </button>
           )}
@@ -298,6 +315,7 @@ function ModalAirdrop({ hide, show, address }: { hide: () => void; show: boolean
         className="input input-bordered w-full"
         value={amount}
         onChange={(e) => setAmount(e.target.value)}
+        style={{ margin: '10px 0' }}
       />
     </AppModal>
   )
@@ -336,6 +354,7 @@ function ModalSend({ hide, show, address }: { hide: () => void; show: boolean; a
         className="input input-bordered w-full"
         value={destination}
         onChange={(e) => setDestination(e.target.value)}
+        style={{ margin: '10px 0' }}
       />
       <input
         disabled={mutation.isPending}
@@ -346,6 +365,7 @@ function ModalSend({ hide, show, address }: { hide: () => void; show: boolean; a
         className="input input-bordered w-full"
         value={amount}
         onChange={(e) => setAmount(e.target.value)}
+        style={{ margin: '10px 0' }}
       />
     </AppModal>
   )
