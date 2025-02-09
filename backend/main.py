@@ -234,51 +234,59 @@ async def process_image(image: ImageUrl):
     1. Analyzes the image to generate a detailed description.
     2. Uses the description to create a pixel-style NFT image.
     """
-    # Step 1: Analyze the image
-    analysis_response = client.chat.completions.create(
-        model="gpt-4o-mini",
-        messages=[
-            {
-                "role": "user",
-                "content": [
-                    {"type": "text", "text": "Describe this image extensively"},
-                    {"type": "image_url", "image_url": {"url": image.imageUrl}}
-                ],
+    description = "No description available"  # Initialize description
+    try:
+        # Step 1: Analyze the image
+        analysis_response = client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[
+                {
+                    "role": "user",
+                    "content": [
+                        {"type": "text", "text": "Describe this image extensively"},
+                        {"type": "image_url", "image_url": {"url": image.imageUrl}}
+                    ],
+                }
+            ],
+            max_tokens=101
+        )
+        
+        # Extract the description text
+        description = analysis_response.choices[0].message.content
+
+        # Step 2: Generate pixelated image based on description
+        pixel_art_response = client.images.generate(
+            model="dall-e-2",
+            prompt=f"2d detailed pixel art of {description} , plain white background",
+            n=1,
+            size="256x256"
+        )
+
+        pixel_art_url = pixel_art_response.data[0].url
+        # Upload the pixel art image to imgbb
+        imgbb_api_key = os.getenv("IMGBB_API_KEY")
+        if not imgbb_api_key:
+            raise RuntimeError("IMGBB_API_KEY environment variable not set")
+
+        imgbb_response = requests.post(
+            "https://api.imgbb.com/1/upload",
+            data={
+                "key": imgbb_api_key,
+                "image": pixel_art_url
             }
-        ],
-        max_tokens=101
-    )
-    
-    # Extract the description text
-    description = analysis_response.choices[0].message.content
+        )
 
-    # Step 2: Generate pixelated image based on description
-    pixel_art_response = client.images.generate(
-        model="dall-e-2",
-        prompt=f"2d detailed pixel art of {description} , plain white background",
-        n=1,
-        size="256x256"
-    )
+        if imgbb_response.status_code != 200:
+            pixel_art_url = "https://i.ibb.co/rGTSGPMV/png-skoid-d505667d-d6c1-4a0a-bac7-5c84a87759f8-sktid-a48cca56-e6da-484e-a814-9c849652bcb3-skt-2025-0.png"
+            print("failed sad")
 
-    pixel_art_url = pixel_art_response.data[0].url
-    # Upload the pixel art image to imgbb
-    imgbb_api_key = os.getenv("IMGBB_API_KEY")
-    if not imgbb_api_key:
-        raise RuntimeError("IMGBB_API_KEY environment variable not set")
+        imgbb_data = imgbb_response.json()
+        hosted_image_url = imgbb_data["data"]["url"]
 
-    imgbb_response = requests.post(
-        "https://api.imgbb.com/1/upload",
-        data={
-            "key": imgbb_api_key,
-            "image": pixel_art_url
-        }
-    )
-
-    if imgbb_response.status_code != 200:
-        raise HTTPException(status_code=500, detail="Failed to upload image to imgbb")
-
-    imgbb_data = imgbb_response.json()
-    hosted_image_url = imgbb_data["data"]["url"]
+    except Exception as e:
+        # Return a default URL in case of any error
+        pixel_art_url = "https://i.ibb.co/rGTSGPMV/png-skoid-d505667d-d6c1-4a0a-bac7-5c84a87759f8-sktid-a48cca56-e6da-484e-a814-9c849652bcb3-skt-2025-0.png"
+        hosted_image_url = "https://i.ibb.co/rGTSGPMV/png-skoid-d505667d-d6c1-4a0a-bac7-5c84a87759f8-sktid-a48cca56-e6da-484e-a814-9c849652bcb3-skt-2025-0.png"
 
     return {
         "description": description,
