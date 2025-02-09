@@ -194,12 +194,6 @@ const CarDetailsModal = ({
             </ul>
           </div>
         </div>
-
-        <div className="mt-6">
-          <button className="w-full bg-purple-600 text-white px-6 py-3 rounded-xl hover:bg-purple-700 transition-all duration-300">
-            Contact Seller
-          </button>
-        </div>
       </div>
     </div>
   </Modal>
