@@ -1,7 +1,7 @@
 # AutoTrust
 
 ## Description
-AutoChain is a decentralized marketplace for buying and selling vehicles transparently using blockchain technology.
+AutoTrust is a decentralized marketplace for buying and selling vehicles transparently using blockchain technology.
 
 The traditional car sales industry lacks transparency, with hidden histories and price manipulation.
 Buyers and sellers often deal with intermediaries, increasing costs and reducing trust.
