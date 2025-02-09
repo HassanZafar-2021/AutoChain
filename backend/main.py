@@ -1,7 +1,7 @@
+import datetime
 from fastapi import FastAPI, Query, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from typing import Optional
 from typing import Optional
 import math
 import os
@@ -10,6 +10,7 @@ import requests
 from dotenv import load_dotenv
 from langchain.chat_models import ChatOpenAI
 from langchain.schema import HumanMessage, SystemMessage
+from pymongo import MongoClient
 load_dotenv()
 
 # Set OpenAI API Key
@@ -17,6 +18,13 @@ os.environ["OPENAI_API_KEY"] = os.getenv("OPENAI_API_KEY")  # Replace with your 
 
 # Initialize LangChain with OpenAI GPT Model
 llm = ChatOpenAI(model="gpt-4o-mini", temperature=0.7)
+
+# MongoDB Connection
+MONGO_URI = os.getenv("MONGO_URI")
+client = MongoClient(MONGO_URI)
+db = client["car_nft_marketplace"]
+cars_collection = db["cars"]
+transactions_collection = db["transactions"]
 
 app = FastAPI()
 
@@ -32,6 +40,92 @@ app.add_middleware(
 @app.get("/")
 def read_root():
     return {"message": "Welcome to the AI-Powered Car Sales Assistant API"}
+
+class CarData(BaseModel):
+    tokenid: str 
+    brand: str  # matches form field 'brand'
+    make: str   # matches form field 'make'
+    year: int   # matches form field 'year'
+    miles: float  # matches form field 'miles'
+    price: float  # matches form field 'price'
+    description: Optional[str] = None  # matches form field 'description'
+    image_url: Optional[str] = None  # for the uploaded image URL
+    mintHash: str
+    txId: str
+    owner: str
+    creator: str
+    
+@app.post("/insert_car_record")
+async def insert_car_record(user_data: CarData):
+   """
+   Inserts a car record into MongoDB.
+   All data comes from request body including tokenid
+   """
+   try:
+       # Format the data before inserting
+       car_record = {
+           "tokenid": user_data.id, # custom added
+           "brand": user_data.brand,
+           "make": user_data.make,
+           "year": user_data.year,
+           "miles": user_data.miles,
+           "price": user_data.price,
+           "description": user_data.description,
+           "image_url": user_data.image_url,
+           "created_at": datetime.utcnow(),  # Add timestamp
+           "mintHash": user_data.mintHash,
+           "txId": user_data.txId,
+           "creator": user_data.creator,
+           "owner": user_data.owner,
+           "status": "active"  # Add status field
+       }
+       
+       # Insert into MongoDB
+       result = cars_collection.insert_one(car_record)
+       
+       return {
+           "message": "Car record inserted successfully!",
+           "car_id": str(result.inserted_id),
+           "tokenid": user_data.tokenid
+       }
+       
+   except Exception as e:
+       raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/car/{tokenid}")
+def get_car_by_tokenid(tokenid: str):
+    """
+    Retrieves a car record from MongoDB using the tokenid.
+    """
+    car = cars_collection.find_one({"tokenid": tokenid})
+
+    if not car:
+        raise HTTPException(status_code=404, detail="Car not found")
+
+    # Convert _id to string for JSON serialization
+    car["_id"] = str(car["_id"])
+
+    return car
+
+@app.get("/cars")
+async def get_all_cars(limit: int = 10, skip: int = 0):
+    """
+    Retrieves all car records from MongoDB with pagination.
+    """
+    cursor = cars_collection.find().skip(skip).limit(limit)
+    cars = []
+    
+    # Convert cursor to list and handle ObjectId conversion
+    for car in cursor:
+        car["_id"] = str(car["_id"])
+        cars.append(car)
+    
+    return {
+        "cars": cars,
+        "count": len(cars),
+        "skip": skip,
+        "limit": limit
+    }
 
 # 🔹 GET Endpoint: Car Value Estimation with Full Data Sent to LLM
 @app.get("/car_value/")
