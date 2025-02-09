@@ -204,135 +204,92 @@ const useMockBlockchainData = (): BlockchainData => {
   const [listings, setListings] = useState<Listing[]>([]);
   const [totalListings, setTotalListings] = useState(0);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
-      const mockListings: Listing[] = [
-        {
-          id: "0x1",
-          name: "Tesla Model 3",
-          image: "/image.png",
-          type: "Electric",
-          // price: "35,000 SOL",
-          verified: true,
-          condition: "New",
-          make: "Tesla",
-          model: "Model 3",
-          // zipCode: "94105",
-          year: 2024,
-          mileage: "0",
-          transmission: "Automatic",
-          fuelType: "Electric",
-          exteriorColor: "Pearl White",
-          interiorColor: "Black",
-          // vin: "TSLA12345678901234",
-        },
-        {
-          id: "0x2",
-          name: "Tesla Model S",
-          image: "/car.png",
-          type: "Luxury",
-          // price: "45,000 SOL",
-          verified: true,
-          condition: "Used",
-          make: "Tesla",
-          model: "Model S",
-          // zipCode: "94105",
-          year: 2023,
-          mileage: "12,500",
-          transmission: "Automatic",
-          fuelType: "Electric",
-          exteriorColor: "Midnight Silver",
-          interiorColor: "White",
-          // vin: "TSLA98765432109876",
-        },
-        {
-          id: "0x3",
-          name: "Nissan Leaf",
-          image: "/nisan.png",
-          type: "Electric",
-          // price: "28,000 SOL",
-          verified: true,
-          condition: "New",
-          make: "Nissan",
-          model: "Leaf",
-          // zipCode: "90210",
-          year: 2024,
-          mileage: "0",
-          transmission: "Automatic",
-          fuelType: "Electric",
-          exteriorColor: "Deep Blue Pearl",
-          interiorColor: "Black",
-          // vin: "NSSN12345678901234",
-        },
-        {
-          id: "0x4",
-          name: "BMW X5",
-          image: "/suv.png",
-          type: "SUV",
-          // price: "40,000 SOL",
-          verified: true,
-          condition: "Used",
-          make: "BMW",
-          model: "X5",
-          // zipCode: "90210",
-          year: 2023,
-          mileage: "15,750",
-          transmission: "Automatic",
-          fuelType: "Gasoline",
-          exteriorColor: "Alpine White",
-          interiorColor: "Cognac",
-          // vin: "BMW123456789012345",
-        },
-      ];
-
-      setListings(mockListings);
-      setTotalListings(176);
-      setLoading(false);
-    };
-
-    fetchData();
-  }, []);
-
-  return { listings, totalListings, loading };
-};
-
-// const useMockBlockchainData = (): BlockchainData => {
-//   const [loading, setLoading] = useState(true);
-//   const [listings, setListings] = useState<Listing[]>([]);
-//   const [totalListings, setTotalListings] = useState(0);
-
 //   useEffect(() => {
 //     const fetchData = async () => {
-//       try {
-//         setLoading(true);
+//       await new Promise((resolve) => setTimeout(resolve, 1000));
 
-//         // Fetch all tokens from CrossMint
-//         const tokens = await crossMint.getAllTokens();
+//       const mockListings: Listing[] = [
+//         {
+//           id: "0x1",
+//           name: "Tesla Model 3",
+//           image: "/image.png",
+//           type: "Electric",
+//           price: "35,000 SOL",
+//           verified: true,
+//           condition: "New",
+//           make: "Tesla",
+//           model: "Model 3",
+//           zipCode: "94105",
+//           year: 2024,
+//           mileage: "0",
+//           transmission: "Automatic",
+//           fuelType: "Electric",
+//           exteriorColor: "Pearl White",
+//           interiorColor: "Black",
+//           // vin: "TSLA12345678901234",
+//         },
+//         {
+//           id: "0x2",
+//           name: "Tesla Model S",
+//           image: "/car.png",
+//           type: "Luxury",
+//           price: "45,000 SOL",
+//           verified: true,
+//           condition: "Used",
+//           make: "Tesla",
+//           model: "Model S",
+//           zipCode: "94105",
+//           year: 2023,
+//           mileage: "12,500",
+//           transmission: "Automatic",
+//           fuelType: "Electric",
+//           exteriorColor: "Midnight Silver",
+//           interiorColor: "White",
+//           // vin: "TSLA98765432109876",
+//         },
+//         {
+//           id: "0x3",
+//           name: "Nissan Leaf",
+//           image: "/nisan.png",
+//           type: "Electric",
+//           price: "28,000 SOL",
+//           verified: true,
+//           condition: "New",
+//           make: "Nissan",
+//           model: "Leaf",
+//           zipCode: "90210",
+//           year: 2024,
+//           mileage: "0",
+//           transmission: "Automatic",
+//           fuelType: "Electric",
+//           exteriorColor: "Deep Blue Pearl",
+//           interiorColor: "Black",
+//           // vin: "NSSN12345678901234",
+//         },
+//         {
+//           id: "0x4",
+//           name: "BMW X5",
+//           image: "/suv.png",
+//           type: "SUV",
+//           price: "40,000 SOL",
+//           verified: true,
+//           condition: "Used",
+//           make: "BMW",
+//           model: "X5",
+//           zipCode: "90210",
+//           year: 2023,
+//           mileage: "15,750",
+//           transmission: "Automatic",
+//           fuelType: "Gasoline",
+//           exteriorColor: "Alpine White",
+//           interiorColor: "Cognac",
+//           // vin: "BMW123456789012345",
+//         },
+//       ];
 
-//         // Extract mongoURIs
-//         const mongoURIs = tokens.map((token) => token.getMetadata().mongoURI);
-
-//         // Fetch car documents from MongoDB using FastAPI
-//         const carDocs = await Promise.all(
-//           mongoURIs.map(async (uri) => {
-//             const response = await fetch(
-//               `http://localhost:8000/getDocument/${uri}`
-//             );
-//             return response.ok ? await response.json() : null;
-//           })
-//         );
-
-//         // Filter out failed fetches and update state
-//         const validListings = carDocs.filter((car) => car !== null);
-//         setListings(validListings);
-//         setTotalListings(validListings.length);
-//       } catch (error) {
-//         console.error("Error fetching blockchain data:", error);
-//       } finally {
-//         setLoading(false);
-//       }
+//       setListings(mockListings);
+//       setTotalListings(176);
+//       setLoading(false);
 //     };
 
 //     fetchData();
@@ -340,6 +297,49 @@ const useMockBlockchainData = (): BlockchainData => {
 
 //   return { listings, totalListings, loading };
 // };
+
+const useMockBlockchainData = (): BlockchainData => {
+  const [loading, setLoading] = useState(true);
+  const [listings, setListings] = useState<Listing[]>([]);
+  const [totalListings, setTotalListings] = useState(0);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+
+        // Fetch all tokens from CrossMint
+        const tokens = 
+
+        // Extract mongoURIs
+        const mongoURIs = 
+
+        // Fetch car documents from MongoDB using FastAPI
+        const carDocs = await Promise.all(
+          mongoURIs.map(async (uri) => {
+            const response = await fetch(
+              `http://localhost:8000/getDocument/${uri}`
+            );
+            return response.ok ? await response.json() : null;
+          })
+        );
+
+        // Filter out failed fetches and update state
+        const validListings = carDocs.filter((car) => car !== null);
+        setListings(validListings);
+        setTotalListings(validListings.length);
+      } catch (error) {
+        console.error("Error fetching blockchain data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  return { listings, totalListings, loading };
+};
 
 const WelcomeMessage = ({ onLearnMore }: { onLearnMore: () => void }) => (
   <div className="bg-gradient-to-r from-purple-600 via-pink-500 to-purple-600 text-white p-4 rounded-lg mb-8 animate-fade-in">

@@ -5,6 +5,7 @@ python-dotenv
 openai
 requests
 langchain
+pymongo
 pybase64
 elevenlabs
 langchain-community
