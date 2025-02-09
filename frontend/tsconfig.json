@@ -1,7 +1,14 @@
 {
   "compilerOptions": {
-    "lib": ["dom", "dom.iterable", "esnext"],
-    "types": ["jest", "node"],
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
+    "types": [
+      "jest",
+      "node"
+    ],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
@@ -21,9 +28,23 @@
     ],
     "baseUrl": "./src",
     "paths": {
-      "@project/anchor": ["anchor/src"],
-      "@/*": ["*"]
+      "@project/anchor": [
+        "anchor/src"
+      ],
+      "@/*": [
+        "*"
+      ]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.spec.ts", "**/*.tsx", ".next/types/**/*.ts", "src/app/listacar/page.jsx"],
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.spec.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    "src/app/listacar/page.jsx"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
 }

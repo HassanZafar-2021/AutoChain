@@ -80,19 +80,7 @@ const getRandomColor = () => {
   return color;
 };
 
-const useRandomColor = () => {
-  const [color, setColor] = useState(getRandomColor());
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setColor(getRandomColor()); // Update state every second
-    }, 1000);
-
-    return () => clearInterval(interval); // Cleanup on unmount
-  }, []); // Runs once, but setInterval keeps updating state
-
-  return color;
-};
+// Removed unused useRandomColor function
 
 export default function DashboardFeature() {
   const { listings, totalListings, loading } = useMockBlockchainData();
