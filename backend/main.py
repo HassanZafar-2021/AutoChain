@@ -11,6 +11,16 @@ import requests
 from dotenv import load_dotenv
 from langchain.chat_models import ChatOpenAI
 from langchain.schema import HumanMessage, SystemMessage
+from pymongo import MongoClient
+import os
+import subprocess
+
+# MongoDB Connection
+MONGO_URI = os.getenv("MONGO_URI", "mongodb://localhost:27017/")
+client = MongoClient(MONGO_URI)
+db = client["car_db"]
+cars_collection = db["cars"]
+transactions_collection = db["transactions"]
 
 # Set OpenAI API Key
 os.environ["OPENAI_API_KEY"] = ""  # Replace with your OpenAI API Key
@@ -32,6 +42,94 @@ app.add_middleware(
 @app.get("/")
 def read_root():
     return {"message": "Welcome to the AI-Powered Car Sales Assistant API"}
+
+def mint_nft_on_solana(car_id, car_data):
+    nft_metadata = f"""
+    {{
+        "name": "{car_data['car_type']} - {car_id}",
+        "symbol": "CAR",
+        "description": "Blockchain-verified car ownership",
+        "seller_fee_basis_points": 500,
+        "image": "{car_data['image_url']}",
+        "attributes": [
+            {{"trait_type": "Mileage", "value": "{car_data['mileage']}"}},
+            {{"trait_type": "Price", "value": "{car_data['initial_price']}"}}
+        ],
+        "properties": {{
+            "creators": [{{ "address": "{car_data['owner_wallet']}", "share": 100 }}]
+        }}
+    }}
+    """
+    metadata_path = f"/tmp/{car_id}.json"
+    with open(metadata_path, "w") as f:
+        f.write(nft_metadata)
+
+    # Mint NFT using Metaplex CLI
+    mint_command = f"metaplex mint_one_token --name 'Car NFT' --uri '{metadata_path}' --keypair ~/.config/solana/id.json"
+    process = subprocess.run(mint_command, shell=True, capture_output=True, text=True)
+
+    if process.returncode == 0:
+        return "NFT_ADDRESS"  # Replace with actual NFT address retrieval logic
+    else:
+        raise HTTPException(status_code=500, detail="NFT Minting Failed")
+
+@app.post("/list_car/")
+def list_car(data: dict):
+    # Store in MongoDB first
+    car_record = {
+        "car_type": data["car_type"],
+        "initial_price": data["initial_price"],
+        "mileage": data["mileage"],
+        "owner_wallet": data["owner_wallet"],
+        "status": "available",
+    }
+    result = cars_collection.insert_one(car_record)
+    car_id = str(result.inserted_id)
+
+    # Call Metaplex to Mint NFT
+    nft_address = mint_nft_on_solana(car_id, data)
+
+    # Update MongoDB with NFT info
+    cars_collection.update_one(
+        {"_id": result.inserted_id},
+        {"$set": {"nft_address": nft_address}}
+    )
+
+    return {"car_id": car_id, "nft_address": nft_address, "message": "Car listed and NFT minted!"}
+
+@app.post("/buy_car/")
+def buy_car(nft_address: str, buyer_wallet: str):
+    # Transfer NFT on Solana
+    transfer_command = f"metaplex transfer --nft {nft_address} --to {buyer_wallet}"
+    process = subprocess.run(transfer_command, shell=True, capture_output=True, text=True)
+
+    if process.returncode != 0:
+        raise HTTPException(status_code=500, detail="NFT Transfer Failed")
+
+    # Update MongoDB ownership
+    cars_collection.update_one(
+        {"nft_address": nft_address},
+        {"$set": {"owner_wallet": buyer_wallet, "status": "sold"}}
+    )
+
+    return {"message": "Car ownership transferred!"}
+
+@app.get("/car/{nft_address}")
+def get_car_details(nft_address: str):
+    # Fetch car from MongoDB
+    car = cars_collection.find_one({"nft_address": nft_address})
+
+    if not car:
+        raise HTTPException(status_code=404, detail="Car not found")
+
+    # Verify NFT ownership on Solana
+    verify_command = f"metaplex verify_ownership --nft {nft_address}"
+    process = subprocess.run(verify_command, shell=True, capture_output=True, text=True)
+
+    car["_id"] = str(car["_id"])
+    car["blockchain_owner"] = process.stdout.strip() if process.returncode == 0 else "Unknown"
+
+    return car
 
 # 🔹 GET Endpoint: Car Value Estimation with Full Data Sent to LLM
 @app.get("/car_value/")
