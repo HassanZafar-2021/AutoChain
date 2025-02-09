@@ -13,7 +13,7 @@ interface Listing {
   condition: string;
   make: string;
   model: string;
-  zipCode: string;
+  // zipCode: string;
   year: number;
   mileage: string;
   transmission: string;
@@ -225,7 +225,7 @@ const useMockBlockchainData = (): BlockchainData => {
           condition: "New",
           make: "Tesla",
           model: "Model 3",
-          zipCode: "94105",
+          // zipCode: "94105",
           year: 2024,
           mileage: "0",
           transmission: "Automatic",
@@ -244,7 +244,7 @@ const useMockBlockchainData = (): BlockchainData => {
           condition: "Used",
           make: "Tesla",
           model: "Model S",
-          zipCode: "94105",
+          // zipCode: "94105",
           year: 2023,
           mileage: "12,500",
           transmission: "Automatic",
@@ -263,7 +263,7 @@ const useMockBlockchainData = (): BlockchainData => {
           condition: "New",
           make: "Nissan",
           model: "Leaf",
-          zipCode: "90210",
+          // zipCode: "90210",
           year: 2024,
           mileage: "0",
           transmission: "Automatic",
@@ -282,7 +282,7 @@ const useMockBlockchainData = (): BlockchainData => {
           condition: "Used",
           make: "BMW",
           model: "X5",
-          zipCode: "90210",
+          // zipCode: "90210",
           year: 2023,
           mileage: "15,750",
           transmission: "Automatic",
