@@ -1,9 +1,10 @@
 fastapi
 uvicorn
 pydantic
-dotenv
+python-dotenv
 openai
 requests
 langchain
+langchain-community
 
 #run: uvicorn main:app --reload

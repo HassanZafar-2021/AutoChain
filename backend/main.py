@@ -11,9 +11,10 @@ import requests
 from dotenv import load_dotenv
 from langchain.chat_models import ChatOpenAI
 from langchain.schema import HumanMessage, SystemMessage
+load_dotenv()
 
 # Set OpenAI API Key
-os.environ["OPENAI_API_KEY"] = ""  # Replace with your OpenAI API Key
+os.environ["OPENAI_API_KEY"] = os.getenv("OPENAI_API_KEY")  # Replace with your OpenAI API Key
 
 # Initialize LangChain with OpenAI GPT Model
 llm = ChatOpenAI(model="gpt-4o-mini", temperature=0.7)
