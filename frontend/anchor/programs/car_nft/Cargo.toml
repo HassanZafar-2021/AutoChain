@@ -1,12 +1,12 @@
 [package]
-name = "frontend"
+name = "car_nft"
 version = "0.1.0"
 description = "Created with Anchor"
 edition = "2021"
 
 [lib]
 crate-type = ["cdylib", "lib"]
-name = "frontend"
+name = "car_nft"
 
 [features]
 default = []
@@ -20,3 +20,4 @@ idl-build = ["anchor-lang/idl-build", "anchor-spl/idl-build"]
 anchor-lang = { version = "0.30.1", features = ["init-if-needed"] }
 anchor-spl = { version = "0.30.1", features = ["metadata"] }
 solana-program = "~1.18.17"
+mpl-token-metadata = "3.0.1"
