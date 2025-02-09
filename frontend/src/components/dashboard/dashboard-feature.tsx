@@ -28,12 +28,13 @@ const useMockBlockchainData = (): BlockchainData => {
       // Simulate blockchain delay
       await new Promise(resolve => setTimeout(resolve, 1000));
       
-      const mockListings: Listing[] = [
-        { id: '0x1', name: 'Tesla Model 3', image: '/api/placeholder/400/200', type: 'Electric', price: '35,000 SOL', verified: true },
-        { id: '0x2', name: 'Tesla Model S', image: '/api/placeholder/400/200', type: 'Electric', price: '45,000 SOL', verified: true },
-        { id: '0x3', name: 'Nissan Leaf', image: '/api/placeholder/400/200', type: 'Electric', price: '28,000 SOL', verified: true },
-        { id: '0x4', name: 'Tesla Model Y', image: '/api/placeholder/400/200', type: 'Electric', price: '40,000 SOL', verified: true }
-      ];
+const mockListings: Listing[] = [
+  { id: '0x1', name: 'Tesla Model 3', image: '/image.png', type: 'Electric', price: '35,000 SOL', verified: true },
+  { id: '0x2', name: 'Tesla Model S', image: '/car.png', type: 'Electric', price: '45,000 SOL', verified: true },
+  { id: '0x3', name: 'Nissan Leaf', image: '/nisan.png', type: 'Electric', price: '28,000 SOL', verified: true },
+  { id: '0x4', name: 'Tesla Model Y', image: '/suv.png', type: 'Electric', price: '40,000 SOL', verified: true }
+];
+
 
       setListings(mockListings);
       setTotalListings(176);
@@ -70,6 +71,29 @@ const categories = [
   'Crossover', 'Hybrid', 'Diesel', 'Coupe', 'Hatchback', 'Wagon', 'Convertible'
 ];
 
+const getRandomColor = () => {
+  const letters = '0123456789ABCDEF';
+  let color = '#';
+  for (let i = 0; i < 6; i++) {
+    color += letters[Math.floor(Math.random() * 16)];
+  }
+  return color;
+};
+
+const useRandomColor = () => {
+  const [color, setColor] = useState(getRandomColor());
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setColor(getRandomColor()); // Update state every second
+    }, 1000);
+
+    return () => clearInterval(interval); // Cleanup on unmount
+  }, []); // Runs once, but setInterval keeps updating state
+
+  return color;
+};
+
 export default function DashboardFeature() {
   const { listings, totalListings, loading } = useMockBlockchainData();
   const [selectedCategory, setSelectedCategory] = useState('Electric');
@@ -82,9 +106,12 @@ export default function DashboardFeature() {
       <div className="bg-purple-600 text-white py-16 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-pink-500 opacity-50"></div>
         <div className="max-w-7xl mx-auto px-4 text-center relative z-10">
-          <h1 className="text-5xl font-bold mb-4 animate-fade-in">
+            <h1 
+            className="text-5xl font-bold mb-4 animate-fade-in"
+            style={{ color: getRandomColor() }}
+            >
             Find Your Next Ride on the Blockchain
-          </h1>
+            </h1>
           <p className="text-xl text-purple-100 mb-8 animate-fade-in-delay">
             Decentralized and Transparent Vehicle Marketplace
           </p>

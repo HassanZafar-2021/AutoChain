@@ -16,7 +16,7 @@ export function useFrontendProgram() {
   const { cluster } = useCluster()
   const transactionToast = useTransactionToast()
   const provider = useAnchorProvider()
-  const programId = useMemo(() => new PublicKey('YourProgramIdHere'), [cluster])
+  const programId = useMemo(() => new PublicKey('coUnmi3oBUtwtd9fjeAvSsJssXh5A5xyPbhpewyzRVF'), [cluster])
   const idl = useMemo(() => {
     return {
       address: 'YourAddressHere',
@@ -28,7 +28,8 @@ export function useFrontendProgram() {
       instructions: [],
     }
   }, [cluster])
-  const program = useMemo(() => new Program(idl, programId, provider), [idl, programId, provider])
+  const program = useMemo(() => idl && provider ? new Program(idl as Idl, programId, provider) : null, [idl, programId, provider])
+
 
   const accounts = useQuery({
     queryKey: ['frontend', 'all', { cluster }],
