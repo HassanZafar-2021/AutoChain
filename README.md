@@ -1,60 +1,53 @@
 # AutoTrust
+First Place Hackathon Winning Project at HackNYU 2025, Solana/Blockchain Track
 
 ## Description
-AutoTrust is a decentralized marketplace for buying and selling vehicles transparently using blockchain technology.
+**Inspiration:**  
+The used car market faces fraud, price manipulation, and transparency issues. Our solution uses blockchain and NFTs to create a trustless, verifiable, and efficient marketplace.
 
-The traditional car sales industry lacks transparency, with hidden histories and price manipulation.
-Buyers and sellers often deal with intermediaries, increasing costs and reducing trust.
+**Key Goals:**  
+- **Immutable Ownership:** Cars are minted as NFTs with secure ownership transfers.  
+- **Transparent Pricing:** Sales history stored on-chain prevents hidden fees.  
+- **Dynamic Valuation:** Real-time data adjusts car prices.  
+- **Decentralized Storage:** Service records stored on IPFS/Arweave.  
+- **Web3 Integration:** Accepts crypto payments via Solana Pay & USDC.
 
-NFT-based car ownership: Each car is minted as an NFT, ensuring verifiable ownership.
-Dynamic pricing: Real-world data from oracles updates car values.
-On-chain sales history: Public and tamper-proof transaction records enhance transparency.
+**How It Works:**  
+- **NFT Car Ownership:** Each car has an NFT with metadata like VIN, model, history, and ownership.  
+- **Transparent Sales History:** All sales are recorded on-chain, displaying past ownership, pricing trends, and vehicle details.  
+- **Seamless Transactions:** Crypto payments are processed with escrow smart contracts.  
+- **Dynamic Price Updates:** AI and oracles adjust car prices based on factors like mileage, history, and demand trends.
 
-## Table of Contents
-- [Description](#description)
-- [Installation](#installation)
-- [Usage](#usage)
-- [Credits](#credits)
-- [License](#license)
-- [Badges](#badges)
-- [Contribute](#how-to-contribute)
-- [Tests](#tests)
+## Tech Stack
+- Frontend: Next.js + TailwindCSS for a modern, responsive UI.
+- Backend: Python FastAPI + MongoDB for storing car metadata, Node.js for NFT minting logic.
+- Blockchain: Solana smart contracts written in Rust using Anchor for transaction management. 
+- Storage: Arweave/IPFS for decentralized, tamper-proof storage of car data and related assets.
 
 ## Installation
+git clone https://github.com/HassanZafar-2021/AutoTrust
 
-(npm init - y) 
-and 
-(run npm I)
-for node modules and dependencies installed. 
-Solana user targeted audience.
+### Frontend:
+cd frontend
+npm install
+npm run dev
 
-## Usage
-run npm run dev to start the program for both frontend and backend.
+### Backend:
+cd backend
+pip install -r requirements.txt
+uvicorn main:app --reload
+
+### Blockchain:
+solana solana-test-validator
+
 
 ## Credits
-Hassan Zafar - https://github.com/HassanZafar-2021
-Tejas Chakrapani - https://github.com/TCYTseven
-Shashank Bezgam - https://github.com/shashankdatta
-Aadit Anand Fadia - https://github.com/aaf091
+
+- **Tejas Chakrapani** - [GitHub](https://github.com/TCYTseven) - Full Stack Developer, Generative AI, NFT Minting
+- **Shashank Bezgam** - [GitHub](https://github.com/shashankdatta) - Full Stack Developer, Solana Blockchain Engineer
+- **Hassan Zafar** - [GitHub](https://github.com/HassanZafar-2021) - Frontend Developer
+- **Aadit Anand Fadia** - [GitHub](https://github.com/aaf091) - Backend Developer, MongoDB Integration
 
 ## License
 ![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)
 
-## Badges
-
-![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)
-![React](https://img.shields.io/badge/React-61DAFB?style=for-the-badge&logo=react&logoColor=black)
-![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
-![Rust](https://img.shields.io/badge/Rust-000000?style=for-the-badge&logo=rust&logoColor=white)
-![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)
-![HTML](https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white)
-![CSS](https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white)
-![MongoDB](https://img.shields.io/badge/MongoDB-47A248?style=for-the-badge&logo=mongodb&logoColor=white)
-
-## How To Contribute
-
-Fork & clone the repo and make your own branch and push with your code to make a PR.
-
-## Tests
-
-Make a tests folder and run npm run tests.
