@@ -26,9 +26,13 @@ The used car market faces fraud, price manipulation, and transparency issues. Ou
 - **Blockchain:** Solana smart contracts written in Rust using Anchor for transaction management. 
 
 ## Installation
+
 ```
 git clone https://github.com/HassanZafar-2021/AutoTrust
 ```
+
+### Dependencies:
+Follow [Solana Dependencies](https://www.anchor-lang.com/docs/installation) documentation to install Rust, the Solana CLI, Anchor Framework, And Node.js on Windows (WSL), Linux, or Mac.
 
 ### Frontend:
 ```
