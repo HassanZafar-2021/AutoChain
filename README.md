@@ -2,7 +2,6 @@
 First Place Hackathon Winning Project at HackNYU 2025, Solana & Blockchain Innovation Track
 
 ## Description
-**Inspiration:**  
 The used car market faces fraud, price manipulation, and transparency issues. Our solution uses blockchain and NFTs to create a trustless, verifiable, and efficient marketplace.
 
 ## Video Demo:
