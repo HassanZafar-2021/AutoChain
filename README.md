@@ -41,7 +41,7 @@ uvicorn main:app --reload
 ```
 
 ### Blockchain:
-`solana solana-test-validator`
+`solana-test-validator`
 
 
 ## Credits
