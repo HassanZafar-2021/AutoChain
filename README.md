@@ -24,7 +24,9 @@ The used car market faces fraud, price manipulation, and transparency issues. Ou
 - **Blockchain:** Solana smart contracts written in Rust using Anchor for transaction management. 
 
 ## Installation
-```git clone https://github.com/HassanZafar-2021/AutoTrust```
+```
+git clone https://github.com/HassanZafar-2021/AutoTrust
+```
 
 ### Frontend:
 ```
@@ -41,7 +43,9 @@ uvicorn main:app --reload
 ```
 
 ### Blockchain:
-```solana-test-validator```
+```
+solana-test-validator
+```
 
 
 ## Credits
